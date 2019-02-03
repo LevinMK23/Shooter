@@ -11,23 +11,26 @@ import java.util.concurrent.SynchronousQueue;
 
 public class GameThread extends Thread{
 
+    long difficult = 0, counter = 0;
     SurfaceHolder holder;
-    Bitmap bmp, fireBall, enemy;
+    Bitmap bmp, fireBall, enemy, hero;
     Bitmap [] eBmp;
     boolean running;
     ArrayList<Bullet> bullets;
     ArrayList<Enemy> enemies;
     long start;
+
     public void addBullet(Bullet bullet){
         bullets.add(bullet);
     }
 
     public GameThread(SurfaceHolder holder, Bitmap bmp, Bitmap fireBall,
-                      Bitmap [] enemy) {
+                      Bitmap [] enemy, Bitmap hero) {
         this.holder = holder;
         start = System.currentTimeMillis();
         this.bmp = bmp;
         running = false;
+        this.hero = hero;
         bullets = new ArrayList<>();
         enemies = new ArrayList<>();
         this.fireBall = fireBall;
@@ -43,14 +46,22 @@ public class GameThread extends Thread{
         while (running){
             synchronized (holder){
                 long cnt = System.currentTimeMillis();
-                if (cnt - start > 100){
+                if (cnt - start > (100 - difficult > 10 ? 100 - difficult : 10)){
                     enemies.add(new Enemy(eBmp));
                     start = cnt;
+                    counter++;
+                }
+                if(counter > 50){
+                    counter = 0;
+                    difficult += 5;
                 }
                 Canvas canvas = holder.lockCanvas();
                 canvas.drawBitmap(bmp, 0, 0, null);
                 canvas.drawBitmap(bmp, 0, bmp.getHeight(), null);
+                canvas.drawBitmap(hero, canvas.getWidth() / 2f,
+                        canvas.getHeight() / 2f, null);
                 for (int i = 0; i < bullets.size(); i++){
+                    //bullets.get(i).setXY(canvas.getWidth() / 2f, canvas.getHeight() / 2f);
                     bullets.get(i).draw(canvas);
                 }
                 for (int i = 0; i < enemies.size(); i++){

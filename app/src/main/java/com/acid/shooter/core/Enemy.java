@@ -27,6 +27,7 @@ public class Enemy {
     }
 
     public void draw(Canvas canvas){
+        //canvas.rotate(30);
         canvas.drawBitmap(sprites[pos], x, y, null);
         long currentTime = System.currentTimeMillis();
         if(currentTime - startTime > 500){

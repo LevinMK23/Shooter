@@ -1,5 +1,6 @@
 package com.acid.shooter.core;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -13,10 +14,10 @@ import com.acid.shooter.R;
 public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
     final SurfaceHolder holder;
-    Bitmap bmp, fireball, enemy;
+    Bitmap bmp, fireball, enemy, hero;
     Bitmap [] enemies;
     GameThread thread;
-    static float x, y;
+    float px, py;
 
     public GameView(Context context) {
         super(context);
@@ -26,6 +27,9 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         fireball = BitmapFactory.decodeResource(getResources(), R.drawable.fireball);
         fireball = Bitmap.createScaledBitmap(fireball, 100, 100, true);
         enemies = new Bitmap[3];
+        hero = Bitmap.createScaledBitmap(
+                BitmapFactory.decodeResource(getResources(), R.drawable.hero),
+                200, 200, true);
         //Bitmap bitmap = Bitmap.createBitmap(fireball, 0, 0, 100, 100, new Matrix(), false);
         enemies[0] = Bitmap.createScaledBitmap(
                 BitmapFactory.decodeResource(getResources(), R.drawable.enemy1),
@@ -36,22 +40,27 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         enemies[2] = Bitmap.createScaledBitmap(
                 BitmapFactory.decodeResource(getResources(), R.drawable.enemy3),
                 100, 100, true);
-        thread = new GameThread(holder, bmp, fireball, enemies);
-
+        thread = new GameThread(holder, bmp, fireball, enemies, hero);
+        px = 600; py = 950;
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         float x = event.getX(), y = event.getY();
-        //Matrix matrix = new Matrix();
-        //matrix.reset();
-        //matrix.postRotate(30);
-        //fireball = Bitmap.createBitmap(fireball, 0, 0, 200, 200, matrix, false);
-        thread.addBullet(new Bullet(fireball, x, y));
+        thread.addBullet(new Bullet(fireball, x, y, px, py));
         return true;
     }
 
-
+    public void zhdemHolder(){
+        while (!holder.isCreating()){
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {

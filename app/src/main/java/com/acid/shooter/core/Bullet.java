@@ -11,10 +11,20 @@ public class Bullet {
     float sin, cos, speed = 20;
     Matrix matrix;
 
-    public Bullet(Bitmap bmp, float x, float y) {
+    public void setXY(float x, float y) {
+        this.tx = x;
+        this.ty = y;
+        float c = (float) Math.sqrt((tx - x) * (tx - x)  + (ty - y) * (ty - y));
+        sin = (y - ty) / c;
+        cos = (x - tx) / c;
+    }
+
+    public Bullet(Bitmap bmp, float x, float y, float px, float py) {
         sprite = bmp;
         this.x = x;
         this.y = y;
+        tx = px;
+        ty = py;
         float c = (float) Math.sqrt((tx - x) * (tx - x)  + (ty - y) * (ty - y));
         sin = (y - ty) / c;
         cos = (x - tx) / c;
